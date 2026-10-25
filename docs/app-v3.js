@@ -202,13 +202,13 @@
       if (model.algorithm !== "RandomForestClassifier") {
         throw new Error("Algoritma pada file model tidak sesuai.");
       }
-      status.textContent = "● Model terlatih v3 siap";
+      status.textContent = "MODEL TERLATIH V3";
       systemStatus.textContent = "Siap dianalisis";
       document.getElementById("system-caption").textContent =
         `${model.trees.length} pohon model dimuat di browser`;
       button.disabled = false;
     } catch (exception) {
-      status.textContent = "● Model gagal dimuat";
+      status.textContent = "MODEL GAGAL DIMUAT";
       systemStatus.textContent = "Model tidak tersedia";
       error.textContent = `${exception.message} Muat ulang halaman atau periksa file model.`;
       error.hidden = false;
