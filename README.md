@@ -29,13 +29,11 @@ di browser menggunakan `docs/model.json`. Model diekspor dari file scikit-learn
 asli oleh `tools/export_static_model.py`; aplikasi tidak memerlukan server
 Flask untuk inferensi di GitHub Pages.
 
-Untuk mengaktifkan publikasi gratis:
+GitHub Pages menerbitkan folder `docs/` dari branch `main`. URL situsnya:
+`https://sholehudinnnn.github.io/ai-cyber-intelligence/`
 
-1. Jadikan repo **Public** (GitHub Free mensyaratkan repo publik untuk Pages).
-2. Buka **Settings > Pages**, lalu pilih **GitHub Actions** sebagai sumber build.
-3. Workflow `.github/workflows/pages.yml` akan menerbitkan `docs/` setelah push
-   ke branch `main`. URL situsnya:
-   `https://sholehudinnnn.github.io/ai-cyber-intelligence/`
+Pipeline pelatihan dataset dapat dibuka di
+[Google Colab](https://colab.research.google.com/drive/1qNHc-e5Ps7eYPS-8_GMR__p48A3f5uqt?usp=sharing).
 
 Repo, kode situs, file model, dan dataset sintetis akan terlihat publik. Jangan
 unggah `.env`, API key, kata sandi, atau data pribadi.

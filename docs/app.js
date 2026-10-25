@@ -202,7 +202,7 @@
       if (model.algorithm !== "RandomForestClassifier") {
         throw new Error("Algoritma pada file model tidak sesuai.");
       }
-      status.textContent = "● Model Random Forest siap";
+      status.textContent = "● Model terlatih siap";
       systemStatus.textContent = "Siap dianalisis";
       document.getElementById("system-caption").textContent =
         `${model.trees.length} pohon model dimuat di browser`;
