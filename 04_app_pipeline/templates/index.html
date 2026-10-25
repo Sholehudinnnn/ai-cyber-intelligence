@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Cyber Intelligence</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="layout">
+  <main class="main main-full">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">PUSAT KEAMANAN DIGITAL</p>
+        <h1>AI Cyber Intelligence</h1>
+        <p class="muted">Analisis indikator keamanan digital untuk mengidentifikasi tingkat risiko dan memberikan rekomendasi keamanan yang mudah dipahami.</p>
+      </div>
+      <div class="pill">● Model terlatih</div>
+    </header>
+
+    <section class="notice">
+      <strong>Catatan transparansi:</strong>
+      AI Cyber Intelligence adalah prototipe sistem keamanan akun berbasis Machine Learning yang dikembangkan dan dilatih menggunakan dataset keamanan akun. Sistem menganalisis sejumlah indikator aktivitas login untuk mengklasifikasikan tingkat risiko serta memberikan informasi pendukung dan rekomendasi keamanan.
+    </section>
+
+    <section class="stats">
+      <article class="stat">
+        <span class="stat-icon cyan">⌁</span>
+        <p>STATUS SISTEM</p>
+        <h2>Siap dianalisis</h2>
+        <small>Menunggu input indikator</small>
+      </article>
+
+      <article class="stat">
+        <span class="stat-icon purple">◎</span>
+        <p>ANALISIS SESI INI</p>
+        <h2>{{ history|length }}</h2>
+        <small>Hasil yang tersimpan sementara</small>
+      </article>
+
+      <article class="stat">
+        <span class="stat-icon orange">△</span>
+        <p>TINGKAT RISIKO</p>
+        <h2>{% if result %}{{ result.level }}{% else %}Belum dinilai{% endif %}</h2>
+        <small>
+          {% if result %}Probabilitas kelas {{ result.score }}%
+          {% else %}Isi formulir untuk memulai{% endif %}
+        </small>
+      </article>
+    </section>
+
+    <div class="content-grid">
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">PEMERIKSAAN</p>
+            <h2>Analisis aktivitas</h2>
+          </div>
+          <span class="number">01</span>
+        </div>
+
+        <p class="muted">
+          Isi indikator yang kamu temukan. Tidak perlu memahami istilah jaringan yang rumit.
+        </p>
+
+        {% if error %}
+          <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <form action="{{ url_for('analyze') }}" method="post">
+          <label>Berapa kali login gagal terjadi?</label>
+          <input type="number" name="failed_logins" min="0" max="100000" value="0" required>
+          <small class="hint">Contoh: ada beberapa percobaan masuk yang gagal.</small>
+
+          <fieldset>
+            <legend>Apakah perangkatnya belum dikenal?</legend>
+            <label class="choice">
+              <input type="radio" name="unknown_device" value="no" checked>
+              Tidak / belum diketahui
+            </label>
+            <label class="choice">
+              <input type="radio" name="unknown_device" value="yes">
+              Ya, perangkat baru atau asing
+            </label>
+          </fieldset>
+
+          <fieldset>
+            <legend>Apakah akses terjadi pada waktu tidak biasa?</legend>
+            <label class="choice">
+              <input type="radio" name="unusual_time" value="no" checked>
+              Tidak
+            </label>
+            <label class="choice">
+              <input type="radio" name="unusual_time" value="yes">
+              Ya
+            </label>
+          </fieldset>
+
+          <fieldset>
+            <legend>Apakah aktivitas menyentuh data atau bagian sensitif?</legend>
+            <label class="choice">
+              <input type="radio" name="sensitive_access" value="no" checked>
+              Tidak / belum diketahui
+            </label>
+            <label class="choice">
+              <input type="radio" name="sensitive_access" value="yes">
+              Ya
+            </label>
+          </fieldset>
+
+          <p class="hint">AI Analyst membuat jawaban otomatis secara lokal berdasarkan semua indikator yang kamu isi dan hasil model ML. Data tidak dikirim ke layanan AI eksternal.</p>
+          <button type="submit">✦ Analisis indikator</button>
+        </form>
+      </section>
+
+      <section class="panel result-panel">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">HASIL PEMERIKSAAN</p>
+            <h2>Insight keamanan</h2>
+          </div>
+          <span class="spark">✧</span>
+        </div>
+
+        {% if result %}
+          <div class="risk risk-{{ result.level|lower }}">
+            <span>TINGKAT RISIKO</span>
+            <h2>{{ result.level }}</h2>
+            <p>{{ result.title }}</p>
+            <div class="meter">
+              <span style="width: {{ result.score }}%"></span>
+            </div>
+            <small>
+              Probabilitas kelas terpilih: {{ result.score }}% · bukan kepastian serangan
+            </small>
+          </div>
+
+          <h3>Probabilitas tiga kelas</h3>
+          <p class="muted small">Nilai berasal dari predict_proba() model untuk input ini.</p>
+
+          <div class="prob-chart">
+            {% for item in result.probability_rows %}
+              <div class="bar-row">
+                <div class="bar-label">
+                  <span>{{ item.label }}</span>
+                  <strong>{{ "%.2f"|format(item.value) }}%</strong>
+                </div>
+                <div class="bar-track">
+                  <div class="bar-fill bar-{{ item.label|lower }}"
+                       style="width: {{ item.value }}%"></div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+
+          <h3>Indikator yang dianalisis</h3>
+          <ul>
+            {% for key, value in result.details.items() %}
+              <li><strong>{{ key }}:</strong> {{ value }}</li>
+            {% endfor %}
+          </ul>
+
+          <h3>Kenapa ditandai?</h3>
+          <ul>
+            {% for reason in result.reasons %}
+              <li>{{ reason }}</li>
+            {% endfor %}
+          </ul>
+
+          <h3>Saran berikutnya</h3>
+          <ul>
+            {% for recommendation in result.recommendations %}
+              <li>{{ recommendation }}</li>
+            {% endfor %}
+          </ul>
+
+          <div class="ai-analysis">
+            <div class="ai-analysis-heading">
+              <h3>AI Analyst</h3>
+            </div>
+            <div class="ai-badges">
+              <div class="ai-badge">
+                <span class="ai-agent">Agent: {{ result.explanation.agent_name }}</span>
+              </div>
+              <div class="ai-badge">
+                <span class="ai-model">AI: {{ result.explanation.model }}</span>
+              </div>
+            </div>
+            {% if result.explanation.available %}
+              <p>{{ result.explanation.text }}</p>
+              {% if result.explanation.mode in ["openai", "gemini"] %}
+                <small>Penjelasan tambahan. Tingkat risiko tetap ditentukan oleh model ML lokal.</small>
+              {% endif %}
+            {% else %}
+              <p>{{ result.explanation.message }}</p>
+            {% endif %}
+          </div>
+
+        {% else %}
+          <div class="empty">
+            <div class="empty-icon">⌁</div>
+            <h3>Belum ada hasil analisis</h3>
+            <p>
+              Isi formulir di sebelah kiri, lalu klik
+              <strong>Analisis indikator</strong>. Hasil, alasan, dan saran akan tampil di sini.
+            </p>
+          </div>
+
+          <div class="mini-tip">
+            <strong>Tips keamanan</strong>
+            <p>Gunakan kata sandi unik dan aktifkan autentikasi multifaktor jika tersedia.</p>
+          </div>
+        {% endif %}
+      </section>
+    </div>
+
+    <section class="panel training-panel" id="model">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">BUKTI MODEL</p>
+          <h2>Training &amp; evaluasi</h2>
+        </div>
+        <span class="number">02</span>
+      </div>
+
+      <p class="muted">
+        Visualisasi dihitung dari model lokal dan CSV ekspor Colab jika file tersedia.
+        Aplikasi tidak mengisi grafik dengan angka contoh.
+      </p>
+
+      {% if training_info.available %}
+        <div class="model-grid">
+          <div class="subpanel">
+            <h3>Feature importance</h3>
+            <p class="muted small">
+              Dari atribut feature_importances_ pada model yang dimuat.
+            </p>
+
+            {% for item in training_info.feature_importance %}
+              <div class="bar-row">
+                <div class="bar-label">
+                  <span>{{ item.name }}</span>
+                  <strong>{{ "%.2f"|format(item.percent) }}%</strong>
+                </div>
+                <div class="bar-track">
+                  <div class="bar-fill bar-feature"
+                       style="width: {{ item.percent }}%"></div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+
+          <div class="subpanel">
+            <h3>Confusion matrix</h3>
+
+            {% if training_info.confusion_matrix %}
+              <p class="muted small">
+                Dihitung dari CSV dengan split 80/20, random_state=42, dan model lokal.
+              </p>
+
+              <div class="table-wrap">
+                <table class="matrix">
+                  <thead>
+                    <tr>
+                      <th>Aktual ↓ / Prediksi →</th>
+                      {% for label in training_info.confusion_matrix.labels %}
+                        <th>{{ label }}</th>
+                      {% endfor %}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for row in training_info.confusion_matrix.rows %}
+                      <tr>
+                        <th>{{ training_info.confusion_matrix.labels[loop.index0] }}</th>
+                        {% for value in row %}
+                          <td>{{ value }}</td>
+                        {% endfor %}
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+
+              <p class="metric">
+                Akurasi evaluasi lokal:
+                <strong>{{ "%.2f"|format(training_info.accuracy) }}%</strong>
+              </p>
+            {% else %}
+              <p>Confusion matrix belum tersedia. Periksa file CSV dataset.</p>
+            {% endif %}
+          </div>
+        </div>
+
+        {% if training_info.class_counts %}
+          <div class="subpanel class-distribution">
+            <h3>Distribusi kelas pada dataset</h3>
+            {% set max_count = training_info.class_counts|map(attribute='count')|max %}
+
+            {% for item in training_info.class_counts %}
+              <div class="bar-row">
+                <div class="bar-label">
+                  <span>{{ item.label }}</span>
+                  <strong>{{ item.count }}</strong>
+                </div>
+                <div class="bar-track">
+                  <div class="bar-fill bar-{{ item.label|lower }}"
+                       style="width: {{ (item.count / max_count * 100) if max_count else 0 }}%">
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+      {% else %}
+        <div class="error">
+          Visualisasi model belum dapat dimuat. Pastikan account_security_model.joblib
+          tersedia dan cocok dengan scikit-learn.
+        </div>
+
+        {% if training_info.error %}
+          <p class="muted small">Detail: {{ training_info.error }}</p>
+        {% endif %}
+      {% endif %}
+    </section>
+
+    <section class="panel history">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">AKTIVITAS TERAKHIR</p>
+          <h2>Riwayat analisis</h2>
+        </div>
+      </div>
+
+      {% if history %}
+        <div class="history-list">
+          {% for item in history %}
+            <div class="history-row">
+              <span class="history-icon">⌕</span>
+              <div class="history-text">
+                <strong>{{ item.title }}</strong>
+                <small>{{ item.time }}</small>
+              </div>
+              <span class="level-tag level-{{ item.level|lower }}">{{ item.level }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="muted">
+          Riwayat akan muncul setelah kamu melakukan analisis pertama.
+          Riwayat ini hanya disimpan selama aplikasi berjalan.
+        </p>
+      {% endif %}
+    </section>
+
+    <section class="pipeline-link">
+      <a class="pipeline-button"
+         href="https://colab.research.google.com/drive/1qNHc-e5Ps7eYPS-8_GMR__p48A3f5uqt?usp=sharing"
+         target="_blank"
+         rel="noopener noreferrer">
+        Buka Pipeline Dataset di Google Colab
+      </a>
+    </section>
+
+    <footer>AI Cyber Intelligence · Prototipe edukasi untuk analisis defensif</footer>
+  </main>
+</div>
+</body>
+</html>

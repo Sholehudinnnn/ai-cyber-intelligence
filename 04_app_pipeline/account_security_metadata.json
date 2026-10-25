@@ -1,0 +1,20 @@
+{
+  "features": [
+    "failed_logins",
+    "unknown_device",
+    "unusual_time",
+    "sensitive_access"
+  ],
+  "classes": [
+    "RENDAH",
+    "SEDANG",
+    "TINGGI"
+  ],
+  "dataset": "synthetic_demo",
+  "seed": 42,
+  "model": "RandomForestClassifier",
+  "n_samples": 5000,
+  "test_size": 0.2,
+  "accuracy_on_synthetic_test": 1.0,
+  "warning": "Model latihan dengan label buatan dari aturan. Bukan detektor ancaman akun yang tervalidasi."
+}
