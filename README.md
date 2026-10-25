@@ -22,24 +22,20 @@ File model `04_app_pipeline/account_security_model.joblib` harus tersedia untuk
 prediksi. Dataset berada di `data/account_security_dataset.csv` dan digunakan
 untuk informasi evaluasi model.
 
-## GitHub
+## Website GitHub Pages
 
-Repo GitHub hanya menyimpan kode dan file proyek. Repo Private membatasi akses
-ke pemilik dan kolaborator yang diundang; repo ini tidak membuat aplikasi
-tersedia sebagai situs web publik. Jangan unggah `.env`, API key, kata sandi,
-atau data pribadi.
+Website statis berada di `docs/` dan menjalankan model Random Forest langsung
+di browser menggunakan `docs/model.json`. Model diekspor dari file scikit-learn
+asli oleh `tools/export_static_model.py`; aplikasi tidak memerlukan server
+Flask untuk inferensi di GitHub Pages.
 
-## Deploy ke Render
+Untuk mengaktifkan publikasi gratis:
 
-File `render.yaml` menyediakan konfigurasi Web Service. Untuk membuat aplikasi
-dapat diakses melalui URL publik:
+1. Jadikan repo **Public** (GitHub Free mensyaratkan repo publik untuk Pages).
+2. Buka **Settings > Pages**, lalu pilih **GitHub Actions** sebagai sumber build.
+3. Workflow `.github/workflows/pages.yml` akan menerbitkan `docs/` setelah push
+   ke branch `main`. URL situsnya:
+   `https://sholehudinnnn.github.io/ai-cyber-intelligence/`
 
-1. Masuk ke Render dan pilih **New > Blueprint**.
-2. Hubungkan akun GitHub dan beri Render akses ke repo Private
-   `Sholehudinnnn/ai-cyber-intelligence`.
-3. Pilih repo tersebut dan deploy Blueprint. Render akan memasang dependency,
-   menjalankan Gunicorn, dan memeriksa endpoint `/health`.
-
-Paket gratis Render dapat menghentikan layanan yang tidak aktif; permintaan
-pertama setelah layanan tidur mungkin memerlukan waktu untuk menyala kembali.
-Repo sumber tetap Private, tetapi aplikasi hasil deploy memiliki URL publik.
+Repo, kode situs, file model, dan dataset sintetis akan terlihat publik. Jangan
+unggah `.env`, API key, kata sandi, atau data pribadi.

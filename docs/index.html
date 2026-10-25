@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Analisis indikator keamanan digital dengan model Random Forest dan rekomendasi keamanan.">
+  <title>AI Cyber Intelligence</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <main class="main main-full">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">PUSAT KEAMANAN DIGITAL</p>
+        <h1>AI Cyber Intelligence</h1>
+        <p class="muted">Analisis indikator keamanan digital untuk mengidentifikasi tingkat risiko dan memberikan rekomendasi keamanan yang mudah dipahami.</p>
+      </div>
+      <div class="pill" id="model-status" role="status">● Memuat model</div>
+    </header>
+
+    <section class="notice">
+      <strong>Catatan transparansi:</strong>
+      Sistem menganalisis indikator aktivitas login menggunakan model Random Forest
+      yang dilatih dengan dataset sintetis. Hasil adalah informasi pendukung dan
+      bukan kepastian adanya serangan.
+    </section>
+
+    <section class="stats" aria-label="Ringkasan analisis">
+      <article class="stat">
+        <span class="stat-icon cyan">⌁</span>
+        <p>STATUS SISTEM</p>
+        <h2 id="system-status">Memuat model</h2>
+        <small id="system-caption">Menyiapkan analisis lokal</small>
+      </article>
+      <article class="stat">
+        <span class="stat-icon purple">◎</span>
+        <p>ANALISIS SESI INI</p>
+        <h2 id="analysis-count">0</h2>
+        <small>Hasil tersimpan selama halaman terbuka</small>
+      </article>
+      <article class="stat">
+        <span class="stat-icon orange">△</span>
+        <p>TINGKAT RISIKO</p>
+        <h2 id="summary-level">Belum dinilai</h2>
+        <small id="summary-score">Isi formulir untuk memulai</small>
+      </article>
+    </section>
+
+    <div class="content-grid">
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">PEMERIKSAAN</p>
+            <h2>Analisis aktivitas</h2>
+          </div>
+          <span class="number">01</span>
+        </div>
+        <p class="muted">Isi indikator yang kamu temukan. Tidak perlu memahami istilah jaringan yang rumit.</p>
+
+        <form id="analysis-form">
+          <label for="failed-logins">Berapa kali login gagal terjadi?</label>
+          <input id="failed-logins" name="failed_logins" type="number" min="0" max="100000" value="0" required>
+          <small class="hint">Contoh: ada beberapa percobaan masuk yang gagal.</small>
+
+          <fieldset>
+            <legend>Apakah perangkatnya belum dikenal?</legend>
+            <label class="choice"><input type="radio" name="unknown_device" value="no" checked> Tidak / belum diketahui</label>
+            <label class="choice"><input type="radio" name="unknown_device" value="yes"> Ya, perangkat baru atau asing</label>
+          </fieldset>
+
+          <fieldset>
+            <legend>Apakah akses terjadi pada waktu tidak biasa?</legend>
+            <label class="choice"><input type="radio" name="unusual_time" value="no" checked> Tidak</label>
+            <label class="choice"><input type="radio" name="unusual_time" value="yes"> Ya</label>
+          </fieldset>
+
+          <fieldset>
+            <legend>Apakah aktivitas menyentuh data atau bagian sensitif?</legend>
+            <label class="choice"><input type="radio" name="sensitive_access" value="no" checked> Tidak / belum diketahui</label>
+            <label class="choice"><input type="radio" name="sensitive_access" value="yes"> Ya</label>
+          </fieldset>
+
+          <p class="hint">Analisis dan prediksi model dijalankan langsung di browser. Input tidak dikirim ke layanan AI eksternal.</p>
+          <button id="analyze-button" type="submit" disabled>✦ Analisis indikator</button>
+          <div class="error" id="analysis-error" role="alert" hidden></div>
+        </form>
+      </section>
+
+      <section class="panel result-panel" aria-live="polite">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">HASIL PEMERIKSAAN</p>
+            <h2>Insight keamanan</h2>
+          </div>
+          <span class="spark">✧</span>
+        </div>
+
+        <div id="empty-result">
+          <div class="empty">
+            <div class="empty-icon">⌁</div>
+            <h3>Belum ada hasil analisis</h3>
+            <p>Isi formulir di sebelah kiri, lalu klik <strong>Analisis indikator</strong>. Hasil, alasan, dan saran akan tampil di sini.</p>
+          </div>
+          <div class="mini-tip">
+            <strong>Tips keamanan</strong>
+            <p>Gunakan kata sandi unik dan aktifkan autentikasi multifaktor jika tersedia.</p>
+          </div>
+        </div>
+
+        <div id="result-content" hidden>
+          <div class="risk" id="risk-card">
+            <span>TINGKAT RISIKO</span>
+            <h2 id="risk-level"></h2>
+            <p id="risk-title"></p>
+            <div class="meter"><span id="risk-meter"></span></div>
+            <small id="risk-score"></small>
+          </div>
+
+          <h3>Probabilitas tiga kelas</h3>
+          <p class="muted small">Nilai dihitung dari inferensi Random Forest pada input ini.</p>
+          <div class="prob-chart" id="probabilities"></div>
+
+          <h3>Indikator yang dianalisis</h3>
+          <ul id="indicator-list"></ul>
+          <h3>Kenapa ditandai?</h3>
+          <ul id="reasons-list"></ul>
+          <h3>Saran berikutnya</h3>
+          <ul id="recommendations-list"></ul>
+
+          <div class="ai-analysis">
+            <div class="ai-analysis-heading"><h3>AI Analyst</h3></div>
+            <div class="ai-badges">
+              <div class="ai-badge"><span class="ai-agent">Agent: AI Cyber Intelligence Analyst</span></div>
+              <div class="ai-badge"><span class="ai-model">AI: GPT-4</span></div>
+            </div>
+            <p id="explanation"></p>
+          </div>
+        </div>
+      </section>
+    </div>
+    <footer>Model dan penjelasan berjalan di browser. Hasil berasal dari data sintetis dan bukan keputusan keamanan final.</footer>
+  </main>
+</div>
+</body>
+</html>
